@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Draw!</title>
+		<style type="text/css">
+		html, body {
+			margin: 0;
+			height: 100%;
+		}
+		#draw-canvas {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+		</style>
+		<script type="text/javascript">
+		var DrawCanvas = null;
+		var DrawContext = null;
+
+		var DotsOptions = {
+			lineWidth: 6,
+			strokeStyle: '#cccccc',
+			lineCap: 'round'
+		}
+
+		var Tree = {
+			width: 140,
+			height: 160,
+			points: [
+				// слева
+				[ 70,   0, '#339933'],
+				[ 65,  10],
+				[ 60,  19],
+				[ 54,  28],
+				[ 47,  37],
+				[ 40,  45],
+				[ 50,  43],
+				[ 60,  40],
+
+				[ 55,  50],
+				[ 50,  59],
+				[ 44,  68],
+				[ 37,  77],
+				[ 30,  85],
+				[ 40,  83],
+				[ 50,  80],
+
+				[ 45,  90],
+				[ 40,  99],
+				[ 34, 108],
+				[ 27, 117],
+				[ 20, 125],
+				[ 30, 124],
+				[ 40, 122],
+				[ 50, 120],
+				[ 60, 117],
+				[ 70, 114],
+
+				// справа
+				[ 70,   0, '#339933'],
+				[ 75,  10],
+				[ 80,  19],
+				[ 86,  28],
+				[ 93,  37],
+				[100,  45],
+				[ 90,  43],
+				[ 80,  40],
+
+				[ 85,  50],
+				[ 90,  59],
+				[ 96,  68],
+				[103,  77],
+				[110,  85],
+				[100,  83],
+				[ 90,  80],
+
+				[ 95,  90],
+				[100,  99],
+				[106, 108],
+				[113, 117],
+				[120, 125],
+				[110, 124],
+				[100, 122],
+				[ 90, 120],
+				[ 80, 117],
+				[ 70, 114],
+
+				// пенек
+				[ 60, 117, '#993300'],
+				[ 59, 126],
+				[ 58, 135],
+				[ 56, 145],
+				[ 65, 144],
+
+				[ 75, 144],
+				[ 84, 145],
+				[ 82, 135],
+				[ 81, 126],
+				[ 80, 117],
+
+			]
+		};
+
+		function init() {
+			DrawCanvas = document.getElementById('draw-canvas');
+			if (DrawCanvas) {
+				DrawContext = DrawCanvas.getContext('2d');
+				updateCanvasSize();
+			}
+		}
+
+		function setOptions(context, options) {
+			for (option in options) {
+				context[option] = options[option];
+			}
+		}
+
+		function draw(shape) {
+			var offsetX = 10;
+			var offsetY = 10;
+			var drawingScale = 3;
+
+			function dots() {
+				if (DrawContext) {
+					DrawContext.beginPath();
+					setOptions(DrawContext, DotsOptions);
+
+					for (var i = 0, len = shape.points.length; i < len; i++) {
+						var x = (shape.points[i][0] + offsetX) * drawingScale;
+						var y = (shape.points[i][1] + offsetY) * drawingScale;
+						DrawContext.moveTo(x, y);
+						DrawContext.lineTo(x, y);
+					}
+
+					DrawContext.stroke();
+				}
+			}
+
+			function line(step) {
+				if (DrawContext) {
+					DrawContext.beginPath();
+					// setOptions(DrawContext, DotsOptions);
+
+					for (var i = 0; i < step; i++) {
+						var x = (shape.points[i][0] + offsetX) * drawingScale;
+						var y = (shape.points[i][1] + offsetY) * drawingScale;
+						if (shape.points[i][2]) {
+							DrawContext.stroke();
+							DrawContext.beginPath();
+							DrawContext.strokeStyle = shape.points[i][2];
+							DrawContext.moveTo(x, y);
+						} else {
+							DrawContext.lineTo(x, y);
+						}
+					}
+
+					DrawContext.stroke();
+				}
+			}
+
+			dots();
+			line(shape.points.length);
+		}
+
+		function updateCanvasSize() {
+			if (DrawContext) {
+				var elmWidth = DrawCanvas.offsetWidth;
+				var elmHeight = DrawCanvas.offsetHeight;
+				var devicePixelRatio = window.devicePixelRatio || 1;
+				var backingStoreRatio = DrawContext.webkitBackingStorePixelRatio || 1;
+				var ratio = devicePixelRatio / backingStoreRatio;
+
+				// update
+				DrawCanvas.width = elmWidth * ratio;
+				DrawCanvas.height = elmHeight * ratio;
+				DrawContext.scale(ratio, ratio);
+			}
+		}
+
+		window.addEventListener('load', function() {
+			init();
+			draw(Tree);
+		});
+		window.addEventListener('resize', function() {
+			updateCanvasSize();
+			draw(Tree);
+		});
+		</script>
+	</head>
+	<body>
+		<canvas id="draw-canvas"></canvas>
+	</body>
+</html>
